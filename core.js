@@ -1,6 +1,9 @@
+import { vertCode } from "./vs.js";
+import { fragCode } from "./fs.js";
+
 /*============== Creating a canvas ====================*/
 var canvas = document.getElementById('canvas');
-gl = canvas.getContext('webgl2');
+var gl = canvas.getContext('webgl2');
       
 /*======== Defining and storing the geometry ===========*/
 
@@ -9,8 +12,8 @@ var vertices = [
    -0.5,-0.5,0.0,
    0.5,-0.5,0.0, 
 ];
-         
-indices = [0,1,2];
+
+var indices = [0,1,2];
 
 var vertex_buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
@@ -23,22 +26,11 @@ gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
 /*================ Shaders ====================*/
-var vertCode =
-   'attribute vec3 coordinates;' +
-       
-   'void main(void) {' +
-      ' gl_Position = vec4(coordinates, 1.0);' +
-   '}';
 var vertShader = gl.createShader(gl.VERTEX_SHADER);
 gl.shaderSource(vertShader, vertCode);
 gl.compileShader(vertShader);
 
 //fragment shader source code
-var fragCode =
-   'void main(void) {' +
-      ' gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);' +
-   '}';
-
 var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 gl.shaderSource(fragShader, fragCode); 
 gl.compileShader(fragShader);
