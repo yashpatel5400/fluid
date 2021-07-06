@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <fstream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -10,18 +11,21 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
+const char *vertexShaderPath = "/Users/mac/Documents/fluid/fluid/fluid/shader.vs";
+const char *fragmentShaderPath = "/Users/mac/Documents/fluid/fluid/fluid/shader.fs";
+
+std::string readFilePath(const char* path) {
+    std::ifstream t(path);
+    std::string str;
+
+    t.seekg(0, std::ios::end);
+    str.reserve(t.tellg());
+    t.seekg(0, std::ios::beg);
+
+    str.assign((std::istreambuf_iterator<char>(t)),
+                std::istreambuf_iterator<char>());
+    return str;
+}
 
 int main() {
     glfwInit();
@@ -50,6 +54,12 @@ int main() {
       return -1;
     }
 
+    std::string vertexShaderSourceStr = readFilePath(vertexShaderPath);
+    std::string fragmentShaderSourceStr = readFilePath(fragmentShaderPath);
+    
+    const char* vertexShaderSource = vertexShaderSourceStr.c_str();
+    const char* fragmentShaderSource = fragmentShaderSourceStr.c_str();
+    
     // vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
