@@ -4,6 +4,9 @@
 #include <iostream>
 #include <fstream>
 
+#include <utility>
+#include <vector>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
@@ -31,12 +34,32 @@ std::string readFilePath(const char* path) {
     return str;
 }
 
-void timeStep(float* data) {
+void initSimulation(float* data) {
+    const int dropRadius2 = 100;
+    std::vector<std::pair<int, int>> simStartPoints = {
+        // drop 1
+        {100, 100},
+    };
+    
     for (int simRow = 0; simRow < SIMULATION_HEIGHT; simRow++) {
         for (int simCol = 0; simCol < SIMULATION_WIDTH; simCol++) {
-            data[simRow * SIMULATION_WIDTH + simCol] = 0.5;
+            for (const std::pair<int, int> simStartPoint : simStartPoints) {
+                float dist2 = (simStartPoint.first - simRow) * (simStartPoint.first - simRow) +
+                             (simStartPoint.second - simCol) * (simStartPoint.second - simCol);
+                if (dist2 < dropRadius2) {
+                    data[simRow * SIMULATION_WIDTH + simCol] = 1.0;
+                }
+            }
         }
     }
+}
+
+void timeStep(float* data) {
+    // for (int simRow = 0; simRow < SIMULATION_HEIGHT; simRow++) {
+    //     for (int simCol = 0; simCol < SIMULATION_WIDTH; simCol++) {
+    //         data[simRow * SIMULATION_WIDTH + simCol] = 0.4;
+    //     }
+    // }
 }
 
 int main() {
@@ -152,6 +175,8 @@ int main() {
     glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
     
     float *data = new float[SIMULATION_WIDTH * SIMULATION_HEIGHT];
+    memset(data, 0, SIMULATION_WIDTH * SIMULATION_HEIGHT * sizeof(float));
+    initSimulation(data);
     
     while (!glfwWindowShouldClose(window))
     {
