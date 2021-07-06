@@ -11,6 +11,10 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// NOTE: this is the SIMULATION height/width and is completely independent of display height/width (just resized to fit in render)
+const int SIMULATION_WIDTH = 800;
+const int SIMULATION_HEIGHT = 600;
+
 const char *vertexShaderPath = "/Users/mac/Documents/fluid/fluid/fluid/shader.vs";
 const char *fragmentShaderPath = "/Users/mac/Documents/fluid/fluid/fluid/shader.fs";
 
@@ -25,6 +29,14 @@ std::string readFilePath(const char* path) {
     str.assign((std::istreambuf_iterator<char>(t)),
                 std::istreambuf_iterator<char>());
     return str;
+}
+
+void timeStep(float* data) {
+    for (int simRow = 0; simRow < SIMULATION_HEIGHT; simRow++) {
+        for (int simCol = 0; simCol < SIMULATION_WIDTH; simCol++) {
+            data[simRow * SIMULATION_WIDTH + simCol] = 0.5;
+        }
+    }
 }
 
 int main() {
@@ -101,10 +113,10 @@ int main() {
     // ------------------------------------------------------------------
     float vertices[] = {
         // positions         // texture coords
-         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left
+         0.8f,  0.8f, 0.0f,  1.0f, 1.0f, // top right
+         0.8f, -0.8f, 0.0f,  1.0f, 0.0f, // bottom right
+        -0.8f, -0.8f, 0.0f,  0.0f, 0.0f, // bottom left
+        -0.8f,  0.8f, 0.0f,  0.0f, 1.0f  // top left
     };
     unsigned int indices[] = {
         0, 1, 3, // first triangle
@@ -138,10 +150,15 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
-
+    
+    float *data = new float[SIMULATION_WIDTH * SIMULATION_HEIGHT];
+    
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
+        
+        timeStep(data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SIMULATION_WIDTH, SIMULATION_HEIGHT, 0, GL_RED, GL_FLOAT, data);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
