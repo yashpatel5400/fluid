@@ -1,2 +1,2 @@
 # fluid
-A fluid simulator (likely to be fairly basic, but we'll see how it goes as I develop) for educational purposes
+Rebranding: trying to make my own PBR renderer (maybe?) based on some readings
